@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Score Tracker</title>
+
+    <style>
+        body {
+            background: #f5cfa3;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            width: 600px;
+            margin: 40px auto;
+        }
+
+        h1 {
+            color: white;
+        }
+
+        form {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        input {
+            padding: 12px;
+            margin: 5px;
+            border: none;
+            background: #f1f1f1;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 12px 20px;
+            background: #20b56b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #studentList {
+            margin-top: 25px;
+        }
+
+        .student {
+            background: white;
+            padding: 12px;
+            margin: 8px;
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        #message {
+            color: red;
+            font-weight: bold;
+            margin: 15px;
+        }
+
+        #average {
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🎓 Student Score Tracker</h1>
+
+    <form id="scoreForm">
+
+        <input
+            type="text"
+            id="studentName"
+            placeholder="Student Name"
+        >
+
+        <input
+            type="number"
+            id="score"
+            placeholder="Score"
+        >
+
+        <button type="submit">Add</button>
+
+    </form>
+
+    <div id="message"></div>
+
+    <div id="studentList"></div>
+
+    <div id="average">Average Score: 0</div>
+
+</div>
+
+<script>
+
+    // Store all students
+    let students = [];
+
+
+    // Get elements
+    const form = document.getElementById("scoreForm");
+    const nameInput = document.getElementById("studentName");
+    const scoreInput = document.getElementById("score");
+    const studentList = document.getElementById("studentList");
+    const average = document.getElementById("average");
+    const message = document.getElementById("message");
+
+
+    // Form submit event
+    form.addEventListener("submit", function(event) {
+
+        // Prevent page reload
+        event.preventDefault();
+
+        const name = nameInput.value.trim();
+        const score = Number(scoreInput.value);
+
+
+        // Validate name
+        if (name === "") {
+            message.textContent = "Student name cannot be empty";
+            return;
+        }
+
+
+        // Validate score
+        if (scoreInput.value === "") {
+            message.textContent = "Score cannot be empty";
+            return;
+        }
+
+
+        // Validate negative score
+        if (score < 0) {
+            message.textContent = "Score cannot be negative";
+            return;
+        }
+
+
+        // Add student object to array
+        students.push({
+            name: name,
+            score: score
+        });
+
+
+        // Clear error
+        message.textContent = "";
+
+
+        // Update display
+        displayStudents();
+        updateAverage();
+
+
+        // Clear inputs
+        nameInput.value = "";
+        scoreInput.value = "";
+
+    });
+
+
+    // Display students
+    function displayStudents() {
+
+        studentList.innerHTML = "";
+
+
+        students.forEach(function(student, index) {
+
+            const div = document.createElement("div");
+
+            div.className = "student";
+
+            div.textContent =
+                student.name + " - " + student.score;
+
+
+            // Double click to remove
+            div.addEventListener("dblclick", function() {
+
+                // Remove from array first
+                students.splice(index, 1);
+
+                // Update list
+                displayStudents();
+
+                // Update average
+                updateAverage();
+
+            });
+
+
+            studentList.appendChild(div);
+
+        });
+
+    }
+
+
+    // Calculate average
+    function updateAverage() {
+
+        if (students.length === 0) {
+            average.textContent = "Average Score: 0";
+            return;
+        }
+
+
+        let total = 0;
+
+        students.forEach(function(student) {
+            total += student.score;
+        });
+
+
+        const avg = total / students.length;
+
+
+        average.textContent =
+            "Average Score of " +
+            students.length +
+            " Students: " +
+            avg.toFixed(2);
+
+    }
+
+</script>
+
+</body>
+</html>
