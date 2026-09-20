@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Card Details</title>
+
+    <style>
+        body {
+            background-color: #b8f0df;
+            font-family: Arial, sans-serif;
+        }
+
+        h2 {
+            text-align: center;
+            color: #8b4b8b;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+
+        th {
+            background-color: #ddd;
+        }
+
+        button {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Revised Credit Card Limit Check</h2>
+
+    <p>
+        To get data from API
+        <button onclick="getData()">Click Here</button>
+    </p>
+
+    <p id="message"></p>
+
+    <button onclick="generateReport()">Report</button>
+
+    <div id="tableContainer"></div>
+
+    <script>
+
+        let cards = [];
+
+        function getData() {
+
+            const xhr = new XMLHttpRequest();
+
+            const url =
+                "https://webapps.tektestac.com/WebAPI/CreditCardsXMLServlet";
+
+            xhr.open("GET", url, true);
+
+            xhr.onreadystatechange = function () {
+
+                if (xhr.readyState === 4) {
+
+                    if (xhr.status === 200) {
+
+                        const xml = xhr.responseXML;
+
+                        const cardElements = xml.getElementsByTagName("card");
+
+                        cards = [];
+
+                        for (let i = 0; i < cardElements.length; i++) {
+
+                            const card = cardElements[i];
+
+                            const cardName =
+                                card.getElementsByTagName("name")[0].textContent;
+
+                            const cardType =
+                                card.getElementsByTagName("type")[0].textContent;
+
+                            const limit =
+                                card.getElementsByTagName("limit")[0].textContent;
+
+                            const expiry =
+                                card.getElementsByTagName("expiry")[0].textContent;
+
+                            const obj = {
+                                name: cardName,
+                                type: cardType,
+                                limit: limit,
+                                expiry: expiry
+                            };
+
+                            cards.push(obj);
+                        }
+
+                        if (cards.length === 16) {
+                            document.getElementById("message").innerHTML =
+                                "Data retrieved successfully.";
+                        }
+
+                    } else {
+                        document.getElementById("message").innerHTML =
+                            "Error retrieving data.";
+                    }
+                }
+            };
+
+            xhr.send();
+        }
+
+
+        function generateReport() {
+
+            let table = `
+                <table>
+                    <tr>
+                        <th>Card Holder Name</th>
+                        <th>Card Type</th>
+                        <th>Credit Limit</th>
+                        <th>Expiry Date</th>
+                    </tr>
+            `;
+
+            for (let card of cards) {
+
+                table += `
+                    <tr>
+                        <td>${card.name}</td>
+                        <td>${card.type}</td>
+                        <td>${card.limit}</td>
+                        <td>${card.expiry}</td>
+                    </tr>
+                `;
+            }
+
+            table += `</table>`;
+
+            document.getElementById("tableContainer").innerHTML = table;
+
+            document.getElementById("message").innerHTML =
+                "Report generated successfully!!!";
+        }
+
+    </script>
+
+</body>
+</html>
